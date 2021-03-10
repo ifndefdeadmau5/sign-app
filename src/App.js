@@ -1,24 +1,42 @@
-import logo from './logo.svg';
-import './App.css';
+import { Button, TextField, Container, Box } from "@material-ui/core";
+import { useState } from "react";
 
 function App() {
+  const [ID, setID] = useState(""); // ID 의 상태(데이터)를 관리
+  const [password, setPassword] = useState(""); // PW 의 상태(데이터)를 관리
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
+    <Container maxWidth="sm">
+      <Box display="flex" flexDirection="column" pb={2} bgcolor="primary.main">
+        <TextField
+          onChange={(e) => {
+            setID(e.target.value);
+          }}
+          id="filled-name"
+          label="아이디"
+          value={ID}
+          variant="filled"
+        />
+        <TextField
+          type="password"
+          onChange={(e) => {
+            setPassword(e.target.value);
+          }}
+          id="filled-name"
+          label="패스워드"
+          value={password}
+          variant="filled"
+        />
+        <Button
+          variant="contained"
+          onClick={() => {
+            // login 호출
+          }}
         >
-          Learn React
-        </a>
-      </header>
-    </div>
+          로그인
+        </Button>
+      </Box>
+    </Container>
   );
 }
 
