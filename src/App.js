@@ -1,13 +1,14 @@
 import { Button, TextField, Container, Box } from "@material-ui/core";
 import { useState } from "react";
+import Document from "./Document";
 
 function App() {
   const [ID, setID] = useState(""); // ID 의 상태(데이터)를 관리
   const [password, setPassword] = useState(""); // PW 의 상태(데이터)를 관리
 
   return (
-    <Container maxWidth="sm">
-      <Box display="flex" flexDirection="column" pb={2} bgcolor="primary.main">
+    <Container maxWidth="lg">
+      <Box display="flex" flexDirection="column" pb={2}>
         <TextField
           onChange={(e) => {
             setID(e.target.value);
@@ -35,6 +36,9 @@ function App() {
         >
           로그인
         </Button>
+      </Box>
+      <Box>
+        <Document />
       </Box>
     </Container>
   );
