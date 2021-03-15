@@ -40,7 +40,7 @@ const SignTypo = styled(Typography)({
   fontSize: 16,
 });
 
-const SignnedImage = styled("img")({
+const SignedImage = styled("img")({
   width: "100px",
   height: "25px",
   position: "absolute",
@@ -89,7 +89,7 @@ const Document = () => {
               <TableCell padding="none" align="center">
                 <Checkbox size="small" />
               </TableCell>
-              <TableCell></TableCell>
+              <TableCell>9만원</TableCell>
               <TableCell rowSpan={8}>기타</TableCell>
               <TableCell>조직재생주사 (DNA)</TableCell>
               <TableCell></TableCell>
@@ -172,7 +172,7 @@ const Document = () => {
           >
             {"환자와의 관계:         인"}
           </SignTypo>
-          {trimmedDataURL ? <SignnedImage src={trimmedDataURL} /> : null}
+          {trimmedDataURL ? <SignedImage src={trimmedDataURL} /> : null}
         </Box>
       </Box>
       <Dialog
