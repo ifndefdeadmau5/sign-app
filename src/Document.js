@@ -18,16 +18,18 @@ import {
   Typography,
 } from "@material-ui/core";
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   signPad: {
     backgroundColor: "transparent",
     width: "100%",
     height: "100%",
   },
   dialogContent: {
-    height: 100,
+    borderBottom: `1px solid ${theme.palette.divider}`,
+    borderTop: `1px solid ${theme.palette.divider}`,
+    height: 150,
   },
-});
+}));
 
 const TableCell = styled(MuiTableCell)({
   border: "1px solid black",
@@ -42,8 +44,9 @@ const SignnedImage = styled("img")({
   width: "100px",
   height: "25px",
   position: "absolute",
-  right: -100,
-  bottom: -20,
+  right: -70,
+  bottom: -5,
+  pointerEvents: "none",
 });
 
 const Document = () => {
@@ -60,7 +63,11 @@ const Document = () => {
   return (
     <>
       <TableContainer>
-        <Table aria-label="spanning table" padding="checkbox" size="small">
+        <Table
+          aria-label="spanning table"
+          // padding="checkbox"
+          // size="small"
+        >
           <TableHead>
             <TableRow>
               <TableCell>항목</TableCell>
@@ -152,10 +159,10 @@ const Document = () => {
         </Table>
       </TableContainer>
       <Box display="flex" flexDirection="column" alignItems="flex-end" p={3}>
-        <SignTypo style={{ whiteSpace: "pre" }} align="right">
+        <SignTypo style={{ whiteSpace: "pre", marginBottom: 24 }} align="right">
           {"2021년          월          일"}
         </SignTypo>
-        <SignTypo style={{ textDecoration: "underline" }} gutterBottom>
+        <SignTypo style={{ textDecoration: "underline", marginBottom: 24 }}>
           {"동의인:            인"}
         </SignTypo>
         <Box position="relative">
@@ -174,7 +181,7 @@ const Document = () => {
         maxWidth="xs"
         fullWidth
       >
-        <DialogTitle id="simple-dialog-title">Set backup account</DialogTitle>
+        <DialogTitle id="simple-dialog-title">서명을 입력해주세요</DialogTitle>
         <DialogContent className={classes.dialogContent}>
           <ReactSignatureCanvas
             penColor="black"
@@ -196,7 +203,7 @@ const Document = () => {
           >
             Submit
           </Button>
-          <Button>Cancel</Button>
+          <Button onClick={() => setOpen(false)}>Cancel</Button>
         </DialogActions>
       </Dialog>
     </>
