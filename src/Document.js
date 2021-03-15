@@ -55,6 +55,7 @@ const Document = () => {
   const padRef = useRef();
   const [trimmedDataURL, setTrimmedDataURL] = useState("");
   const trim = () => {
+    // pad 에 싸인한거를 이미지로 얻어오겠다
     setTrimmedDataURL(padRef.current.getTrimmedCanvas().toDataURL("image/png"));
   };
   const handleOpen = () => setOpen(true);
@@ -63,11 +64,7 @@ const Document = () => {
   return (
     <>
       <TableContainer>
-        <Table
-          aria-label="spanning table"
-          // padding="checkbox"
-          // size="small"
-        >
+        <Table aria-label="spanning table">
           <TableHead>
             <TableRow>
               <TableCell>항목</TableCell>
