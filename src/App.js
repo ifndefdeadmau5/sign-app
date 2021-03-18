@@ -1,46 +1,22 @@
-import { Button, TextField, Container, Box } from "@material-ui/core";
-import { useState } from "react";
+import { Container, Box } from "@material-ui/core";
+import { BrowserRouter, Route, Switch } from "react-router-dom";
 import Document from "./Document";
+import SignIn from "./SignIn";
 
 function App() {
-  const [ID, setID] = useState(""); // ID 의 상태(데이터)를 관리
-  const [password, setPassword] = useState(""); // PW 의 상태(데이터)를 관리
-
   return (
-    <Container maxWidth="lg">
-      <Box display="flex" flexDirection="column" pb={2}>
-        <TextField
-          onChange={(e) => {
-            setID(e.target.value);
-          }}
-          id="filled-name"
-          label="아이디"
-          value={ID}
-          variant="filled"
-        />
-        <TextField
-          type="password"
-          onChange={(e) => {
-            setPassword(e.target.value);
-          }}
-          id="filled-name"
-          label="패스워드"
-          value={password}
-          variant="filled"
-        />
-        <Button
-          variant="contained"
-          onClick={() => {
-            // login 호출
-          }}
-        >
-          로그인
-        </Button>
-      </Box>
-      <Box>
-        <Document />
-      </Box>
-    </Container>
+    <BrowserRouter>
+      <Container maxWidth="lg">
+        <Switch>
+          <Route exact path="/">
+            <SignIn />
+          </Route>
+          <Route path="/document">
+            <Document />
+          </Route>
+        </Switch>
+      </Container>
+    </BrowserRouter>
   );
 }
 

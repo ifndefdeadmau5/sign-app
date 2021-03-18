@@ -15,10 +15,13 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  FormControlLabel,
+  Switch,
   TextField,
   Typography,
 } from "@material-ui/core";
-import { CheckBox, CheckBoxOutlineBlank } from "@material-ui/icons";
+import { Check, CheckBox, CheckBoxOutlineBlank } from "@material-ui/icons";
+import { useReducer } from "react";
 
 const useStyles = makeStyles((theme) => ({
   signPad: {
@@ -30,6 +33,7 @@ const useStyles = makeStyles((theme) => ({
     borderBottom: `1px solid ${theme.palette.divider}`,
     borderTop: `1px solid ${theme.palette.divider}`,
     height: 150,
+    maxWidth: 600,
   },
   input: {
     textAlign: "right",
@@ -55,20 +59,65 @@ const SignedImage = styled("img")({
   pointerEvents: "none",
 });
 
+function reducer(state, action) {
+  const { type, payload } = action;
+  return { ...state, [type]: payload };
+}
+
+const CheckInput = ({ edit, ...props }) => {
+  return edit ? (
+    <Checkbox
+      icon={<CheckBoxOutlineBlank fontSize="large" />}
+      checkedIcon={<CheckBox fontSize="large" />}
+      {...props}
+    />
+  ) : (
+    <Check fontSize="large" />
+  );
+};
+
 const Document = () => {
   const classes = useStyles();
-  const [open, setOpen] = useState(false);
   const padRef = useRef();
+  const [open, setOpen] = useState(false);
+  const [edit, setEdit] = useState(false);
+  const [state, dispatch] = useReducer(reducer, {
+    state1: false,
+    state2: false,
+    state3: false,
+    state4: false,
+    state5: false,
+  });
   const [trimmedDataURL, setTrimmedDataURL] = useState("");
+
   const trim = () => {
     // pad 에 싸인한거를 이미지로 얻어오겠다
     setTrimmedDataURL(padRef.current.getTrimmedCanvas().toDataURL("image/png"));
   };
   const handleOpen = () => setOpen(true);
 
-  console.log(trimmedDataURL);
+  const handleChange = (event) => {
+    dispatch({ type: event.target.name, payload: event.target.checked });
+  };
+
+  const checkboxCellProps = {
+    padding: "none",
+    align: "center",
+  };
+
+  const handleEditModeChange = (event) => {
+    setEdit(event.target.checked);
+  };
+
   return (
-    <>
+    <Box pt={20}>
+      <FormControlLabel
+        // value="편집 모드"
+        control={<Switch checked={edit} onChange={handleEditModeChange} />}
+        label="편집 모드"
+        labelPlacement="start"
+      />
+
       <TableContainer>
         <Table aria-label="spanning table">
           <TableHead>
@@ -89,11 +138,12 @@ const Document = () => {
                 검사
               </TableCell>
               <TableCell>초음파</TableCell>
-              <TableCell padding="none" align="center">
-                <Checkbox
-                  icon={<CheckBoxOutlineBlank fontSize="large" />}
-                  checkedIcon={<CheckBox fontSize="large" />}
-                  name="checkedI"
+              <TableCell {...checkboxCellProps}>
+                <CheckInput
+                  name="state1"
+                  value={state.state1}
+                  onChange={handleChange}
+                  edit={edit}
                 />
               </TableCell>
               <TableCell>9만원</TableCell>
@@ -104,11 +154,11 @@ const Document = () => {
             </TableRow>
             <TableRow>
               <TableCell>적외선 체열검사</TableCell>
-              <TableCell padding="none">
-                <Checkbox
+              <TableCell {...checkboxCellProps}>
+                <CheckInput
                   icon={<CheckBoxOutlineBlank fontSize="large" />}
+                  edit={edit}
                   checkedIcon={<CheckBox fontSize="large" />}
-                  name="checkedI"
                 />
               </TableCell>
               <TableCell></TableCell>
@@ -121,11 +171,11 @@ const Document = () => {
                 치료
               </TableCell>
               <TableCell>체외충격파치료</TableCell>
-              <TableCell padding="none">
-                <Checkbox
-                  icon={<CheckBoxOutlineBlank fontSize="large" />}
+              <TableCell {...checkboxCellProps}>
+                <CheckInput
                   checkedIcon={<CheckBox fontSize="large" />}
-                  name="checkedI"
+                  edit={edit}
+                  name="state3"
                 />
               </TableCell>
               <TableCell></TableCell>
@@ -135,11 +185,11 @@ const Document = () => {
             </TableRow>
             <TableRow>
               <TableCell>Cryotherapy</TableCell>
-              <TableCell padding="none">
-                <Checkbox
-                  icon={<CheckBoxOutlineBlank fontSize="large" />}
+              <TableCell {...checkboxCellProps}>
+                <CheckInput
                   checkedIcon={<CheckBox fontSize="large" />}
-                  name="checkedI"
+                  edit={edit}
+                  name="state4"
                 />
               </TableCell>
               <TableCell></TableCell>
@@ -149,51 +199,40 @@ const Document = () => {
             </TableRow>
             <TableRow>
               <TableCell>도수치료</TableCell>
-              <TableCell padding="none">
-                <Checkbox
-                  icon={<CheckBoxOutlineBlank fontSize="large" />}
+              <TableCell {...checkboxCellProps}>
+                <CheckInput
                   checkedIcon={<CheckBox fontSize="large" />}
-                  name="checkedI"
+                  edit={edit}
+                  name="state5"
                 />
               </TableCell>
               <TableCell></TableCell>
               <TableCell>혈관 영양주사</TableCell>
-              <TableCell padding="none">
-                <Checkbox
-                  icon={<CheckBoxOutlineBlank fontSize="large" />}
-                  checkedIcon={<CheckBox fontSize="large" />}
-                  name="checkedI"
-                />
+              <TableCell {...checkboxCellProps}>
+                <CheckInput name="checkedI" edit={edit} />
               </TableCell>
               <TableCell></TableCell>
             </TableRow>
             <TableRow>
               <TableCell>Painscrambler</TableCell>
-              <TableCell padding="none">
-                <Checkbox
-                  icon={<CheckBoxOutlineBlank fontSize="large" />}
-                  checkedIcon={<CheckBox fontSize="large" />}
-                  name="checkedI"
-                />
+              <TableCell {...checkboxCellProps}>
+                <CheckInput name="checkedI" edit={edit} />
               </TableCell>
               <TableCell></TableCell>
               <TableCell>대상포진 예방접종</TableCell>
-              <TableCell padding="none">
-                <Checkbox
-                  icon={<CheckBoxOutlineBlank fontSize="large" />}
-                  checkedIcon={<CheckBox fontSize="large" />}
-                  name="checkedI"
-                />
+              <TableCell {...checkboxCellProps}>
+                <CheckInput name="checkedI" edit={edit} />
               </TableCell>
               <TableCell></TableCell>
             </TableRow>
             <TableRow>
               <TableCell>증식치료</TableCell>
-              <TableCell padding="none">
-                <Checkbox
+              <TableCell {...checkboxCellProps}>
+                <CheckInput
                   icon={<CheckBoxOutlineBlank fontSize="large" />}
                   checkedIcon={<CheckBox fontSize="large" />}
                   name="checkedI"
+                  edit={edit}
                 />
               </TableCell>
               <TableCell></TableCell>
@@ -204,7 +243,7 @@ const Document = () => {
             <TableRow>
               <TableCell variant="head">기타</TableCell>
               <TableCell></TableCell>
-              <TableCell></TableCell>
+              <TableCell {...checkboxCellProps}></TableCell>
               <TableCell></TableCell>
               <TableCell>토마스칼라(목보호대)</TableCell>
               <TableCell></TableCell>
@@ -238,12 +277,7 @@ const Document = () => {
           {trimmedDataURL ? <SignedImage src={trimmedDataURL} /> : null}
         </Box>
       </Box>
-      <Dialog
-        onClose={() => setOpen(false)}
-        open={open}
-        maxWidth="xs"
-        fullWidth
-      >
+      <Dialog onClose={() => setOpen(false)} open={open} fullWidth>
         <DialogTitle id="simple-dialog-title">서명을 입력해주세요</DialogTitle>
         <DialogContent className={classes.dialogContent}>
           <ReactSignatureCanvas
@@ -269,7 +303,7 @@ const Document = () => {
           <Button onClick={() => setOpen(false)}>Cancel</Button>
         </DialogActions>
       </Dialog>
-    </>
+    </Box>
   );
 };
 
