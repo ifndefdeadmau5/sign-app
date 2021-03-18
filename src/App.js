@@ -1,4 +1,4 @@
-import { Container, Box } from "@material-ui/core";
+import { Container } from "@material-ui/core";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 import Document from "./Document";
 import SignIn from "./SignIn";
