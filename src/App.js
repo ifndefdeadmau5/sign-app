@@ -38,7 +38,7 @@ function App() {
             <Route exact path="/">
               <SignIn />
             </Route>
-            <Route path="/survey/:id">
+            <Route path="/survey/:id?">
               <Document />
             </Route>
             <Route path="/surveys">

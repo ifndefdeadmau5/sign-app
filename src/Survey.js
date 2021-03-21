@@ -16,15 +16,13 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  FormControlLabel,
   LinearProgress,
-  Switch,
   TextField,
   Typography,
 } from "@material-ui/core";
 import { Check, CheckBox, CheckBoxOutlineBlank } from "@material-ui/icons";
 import { useReducer } from "react";
-import { gql, useQuery } from "@apollo/client";
+import { gql, useMutation, useQuery } from "@apollo/client";
 import { useParams } from "react-router";
 
 const useStyles = makeStyles((theme) => ({
@@ -42,6 +40,9 @@ const useStyles = makeStyles((theme) => ({
   input: {
     textAlign: "right",
     paddingRight: theme.spacing(1),
+  },
+  firstTable: {
+    marginBottom: theme.spacing(3),
   },
 }));
 
@@ -84,6 +85,14 @@ const GET_SURVEY = gql`
   }
 `;
 
+const ADD_SURVEY = gql`
+  mutation AddSurvey($input: SurveyInput!) {
+    addSurvey(input: $input) {
+      id
+    }
+  }
+`;
+
 const CheckInput = ({ edit, ...props }) => {
   return edit ? (
     <Checkbox
@@ -100,10 +109,9 @@ const Document = () => {
   const classes = useStyles();
   const padRef = useRef();
   const [open, setOpen] = useState(false);
-  const [edit, setEdit] = useState(false);
   const [trimmedDataURL, setTrimmedDataURL] = useState("");
   const { id } = useParams();
-  const { loading } = useQuery(GET_SURVEY, {
+  const { loading, data } = useQuery(GET_SURVEY, {
     variables: { id },
     skip: !id,
     onCompleted: ({ survey }) => {
@@ -118,11 +126,11 @@ const Document = () => {
           {}
         );
 
-      console.log(initialState);
       dispatch({ type: "reset", payload: initialState });
       setTrimmedDataURL(survey.signatureDataUrl);
     },
   });
+  const [addSurvey, { loading: addSurveyLoading }] = useMutation(ADD_SURVEY);
   const [state, dispatch] = useReducer(
     reducer,
     {
@@ -134,11 +142,69 @@ const Document = () => {
       check6: false,
       check7: false,
       check8: false,
+      check9: false,
+      check10: false,
+      check11: false,
+      check12: false,
+      check13: false,
+      check14: false,
+      check15: false,
     },
     init
   );
+  const editMode = !data;
 
-  console.log(state);
+  const onSubmit = () => {
+    const {
+      check1,
+      check2,
+      check3,
+      check4,
+      check5,
+      check6,
+      check7,
+      check8,
+      check9,
+      check10,
+      check11,
+      check12,
+      check13,
+      check14,
+      check15,
+    } = state;
+    const result = [
+      check1,
+      check2,
+      check3,
+      check4,
+      check5,
+      check6,
+      check7,
+      check8,
+      check9,
+      check10,
+      check11,
+      check12,
+      check13,
+      check14,
+      check15,
+    ]
+      .map((v) => (v ? "1" : "0"))
+      .join(",");
+
+    addSurvey({
+      variables: {
+        input: {
+          name: "test name",
+          gender: "male",
+          signedBy: "Mr. agree",
+          signatureDataUrl: trimmedDataURL,
+          registrationNumber: "123456789",
+          result,
+        },
+      },
+    });
+  };
 
   const trim = () => {
     setTrimmedDataURL(padRef.current.getTrimmedCanvas().toDataURL("image/png"));
@@ -154,19 +220,36 @@ const Document = () => {
     align: "center",
   };
 
-  const handleEditModeChange = (event) => {
-    setEdit(event.target.checked);
-  };
-
   return (
     <Container maxWidth="lg">
-      <Box pt={20}>
-        <FormControlLabel
-          control={<Switch checked={edit} onChange={handleEditModeChange} />}
-          label="편집 모드"
-          labelPlacement="start"
-        />
+      <Box py={10}>
         {loading && <LinearProgress />}
+        <Typography variant="h4" align="center" gutterBottom>
+          비급여 동의서 &
+        </Typography>
+        <Typography variant="h4" align="center" gutterBottom>
+          주사치료시 발생가능한 부작용에 대한 설명
+        </Typography>
+        <TableContainer className={classes.firstTable}>
+          <Table>
+            <TableBody>
+              <TableRow>
+                <TableCell variant="head">등록번호</TableCell>
+                <TableCell colSpan={3}>
+                  <TextField fullWidth />
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell variant="head">성명</TableCell>
+                <TableCell>
+                  <TextField fullWidth />
+                </TableCell>
+                <TableCell>성별</TableCell>
+                <TableCell>남 여</TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+        </TableContainer>
         <TableContainer>
           <Table aria-label="spanning table">
             <TableHead>
@@ -192,7 +275,7 @@ const Document = () => {
                     name="check1"
                     checked={state.check1}
                     onChange={handleChange}
-                    edit={edit}
+                    edit={editMode}
                   />
                 </TableCell>
                 <TableCell>9만원</TableCell>
@@ -203,7 +286,7 @@ const Document = () => {
                     name="check8"
                     checked={state.check8}
                     onChange={handleChange}
-                    edit={edit}
+                    edit={editMode}
                   />
                 </TableCell>
                 <TableCell></TableCell>
@@ -215,7 +298,7 @@ const Document = () => {
                     name="check2"
                     checked={state.check2}
                     onChange={handleChange}
-                    edit={edit}
+                    edit={editMode}
                   />
                 </TableCell>
                 <TableCell></TableCell>
@@ -225,7 +308,7 @@ const Document = () => {
                     name="check9"
                     checked={state.check9}
                     onChange={handleChange}
-                    edit={edit}
+                    edit={editMode}
                   />
                 </TableCell>
                 <TableCell></TableCell>
@@ -240,7 +323,7 @@ const Document = () => {
                     name="check3"
                     checked={state.check3}
                     onChange={handleChange}
-                    edit={edit}
+                    edit={editMode}
                   />
                 </TableCell>
                 <TableCell></TableCell>
@@ -250,7 +333,7 @@ const Document = () => {
                     name="check10"
                     checked={state.check10}
                     onChange={handleChange}
-                    edit={edit}
+                    edit={editMode}
                   />
                 </TableCell>
                 <TableCell></TableCell>
@@ -259,7 +342,7 @@ const Document = () => {
                 <TableCell>Cryotherapy</TableCell>
                 <TableCell {...checkboxCellProps}>
                   <CheckInput
-                    edit={edit}
+                    edit={editMode}
                     checked={state.check4}
                     onChange={handleChange}
                     name="check4"
@@ -270,9 +353,9 @@ const Document = () => {
                 <TableCell {...checkboxCellProps}>
                   <CheckInput
                     name="check11"
-                    checked={state.check8}
+                    checked={state.check11}
                     onChange={handleChange}
-                    edit={edit}
+                    edit={editMode}
                   />
                 </TableCell>
                 <TableCell></TableCell>
@@ -281,7 +364,7 @@ const Document = () => {
                 <TableCell>도수치료</TableCell>
                 <TableCell {...checkboxCellProps}>
                   <CheckInput
-                    edit={edit}
+                    edit={editMode}
                     checked={state.check5}
                     onChange={handleChange}
                     name="check5"
@@ -294,7 +377,7 @@ const Document = () => {
                     name="check12"
                     checked={state.check12}
                     onChange={handleChange}
-                    edit={edit}
+                    edit={editMode}
                   />
                 </TableCell>
                 <TableCell></TableCell>
@@ -306,7 +389,7 @@ const Document = () => {
                     name="check6"
                     checked={state.check6}
                     onChange={handleChange}
-                    edit={edit}
+                    edit={editMode}
                   />
                 </TableCell>
                 <TableCell></TableCell>
@@ -317,7 +400,7 @@ const Document = () => {
                     checked={state.check13}
                     onChange={handleChange}
                     checkedIcon={<CheckBox fontSize="large" />}
-                    edit={edit}
+                    edit={editMode}
                   />
                 </TableCell>
                 <TableCell></TableCell>
@@ -329,7 +412,7 @@ const Document = () => {
                     name="check7"
                     checked={state.check7}
                     onChange={handleChange}
-                    edit={edit}
+                    edit={editMode}
                   />
                 </TableCell>
                 <TableCell></TableCell>
@@ -339,7 +422,7 @@ const Document = () => {
                     name="check14"
                     checked={state.check14}
                     onChange={handleChange}
-                    edit={edit}
+                    edit={editMode}
                   />
                 </TableCell>
                 <TableCell></TableCell>
@@ -355,7 +438,7 @@ const Document = () => {
                     name="check15"
                     checked={state.check15}
                     onChange={handleChange}
-                    edit={edit}
+                    edit={editMode}
                   />
                 </TableCell>
                 <TableCell></TableCell>
@@ -422,6 +505,17 @@ const Document = () => {
             <Button onClick={() => setOpen(false)}>Cancel</Button>
           </DialogActions>
         </Dialog>
+        <Box width={1} display="flex" justifyContent="flex-end" p={5}>
+          <Button
+            color="primary"
+            variant="contained"
+            onClick={onSubmit}
+            disableElevation
+            size="large"
+          >
+            완료
+          </Button>
+        </Box>
       </Box>
     </Container>
   );

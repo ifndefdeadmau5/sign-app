@@ -30,7 +30,9 @@ export const SurveyItem = React.memo(function PopularListItem({
         <Info useStyles={usePopularInfoStyles}>
           <InfoSubtitle>{name}</InfoSubtitle>
           <InfoTitle>동의서 기본양식</InfoTitle>
-          <InfoCaption>{createdAt}</InfoCaption>
+          <InfoCaption>
+            {new Date(Number(createdAt)).toLocaleTimeString()}
+          </InfoCaption>
         </Info>
       </Row>
     </>
