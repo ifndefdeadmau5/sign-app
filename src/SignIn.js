@@ -1,4 +1,4 @@
-import { Box, Button, TextField } from "@material-ui/core";
+import { Box, Button, Container, TextField } from "@material-ui/core";
 import { useState } from "react";
 import { useHistory } from "react-router";
 
@@ -8,47 +8,49 @@ const SignIn = () => {
   const history = useHistory();
 
   const handleSubmit = () => {
-    history.push("/document");
+    history.push("/surveys");
   };
 
   return (
-    <Box
-      display="flex"
-      flexDirection="column"
-      alignItems="center"
-      pt={12}
-      width={600}
-      marginX="auto"
-    >
-      <TextField
-        onChange={(e) => {
-          setID(e.target.value);
-        }}
-        label="아이디"
-        value={ID}
-        variant="filled"
-        fullWidth
-      />
-      <TextField
-        type="password"
-        onChange={(e) => {
-          setPassword(e.target.value);
-        }}
-        label="패스워드"
-        value={password}
-        variant="filled"
-        fullWidth
-      />
-      <Button
-        variant="contained"
-        onClick={() => {
-          handleSubmit();
-        }}
-        fullWidth
+    <Container maxWidth="sm">
+      <Box
+        display="flex"
+        flexDirection="column"
+        alignItems="center"
+        pt={12}
+        width={600}
+        marginX="auto"
       >
-        로그인
-      </Button>
-    </Box>
+        <TextField
+          onChange={(e) => {
+            setID(e.target.value);
+          }}
+          label="아이디"
+          value={ID}
+          variant="filled"
+          fullWidth
+        />
+        <TextField
+          type="password"
+          onChange={(e) => {
+            setPassword(e.target.value);
+          }}
+          label="패스워드"
+          value={password}
+          variant="filled"
+          fullWidth
+        />
+        <Button
+          variant="contained"
+          onClick={() => {
+            handleSubmit();
+          }}
+          fullWidth
+        >
+          로그인
+        </Button>
+      </Box>
+    </Container>
   );
 };
 
