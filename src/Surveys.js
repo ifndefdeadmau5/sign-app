@@ -11,6 +11,7 @@ import {
   Paper,
 } from "@material-ui/core";
 import { Add } from "@material-ui/icons";
+import React from "react";
 import { useState } from "react";
 import { useHistory } from "react-router";
 
@@ -63,7 +64,7 @@ const Surveys = () => {
           <List>
             {data &&
               data.surveys.map(({ id, name, createdAt }, i) => (
-                <>
+                <React.Fragment key={id}>
                   <SurveyItem
                     onClick={() => history.push(`/survey/${id}`)}
                     name={name}
@@ -71,7 +72,7 @@ const Surveys = () => {
                     imgUrl={`https://picsum.photos/64/64?random=${id}`}
                   />
                   {data.surveys.length - 1 !== i && <Divider />}
-                </>
+                </React.Fragment>
               ))}
           </List>
         </Paper>

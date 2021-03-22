@@ -16,7 +16,10 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  FormControlLabel,
   LinearProgress,
+  Radio,
+  RadioGroup,
   TextField,
   Typography,
 } from "@material-ui/core";
@@ -105,6 +108,28 @@ const CheckInput = ({ edit, ...props }) => {
   ) : null;
 };
 
+const initialValues = {
+  check1: false,
+  check2: false,
+  check3: false,
+  check4: false,
+  check5: false,
+  check6: false,
+  check7: false,
+  check8: false,
+  check9: false,
+  check10: false,
+  check11: false,
+  check12: false,
+  check13: false,
+  check14: false,
+  check15: false,
+  name: "",
+  signedBy: "",
+  registrationNumber: "",
+  gender: "male",
+};
+
 const Document = () => {
   const classes = useStyles();
   const padRef = useRef();
@@ -126,33 +151,16 @@ const Document = () => {
           {}
         );
 
-      dispatch({ type: "reset", payload: initialState });
+      dispatch({
+        type: "reset",
+        payload: { ...initialValues, ...initialState },
+      });
       setTrimmedDataURL(survey.signatureDataUrl);
     },
   });
   const [addSurvey, { loading: addSurveyLoading }] = useMutation(ADD_SURVEY);
-  const [state, dispatch] = useReducer(
-    reducer,
-    {
-      check1: false,
-      check2: false,
-      check3: false,
-      check4: false,
-      check5: false,
-      check6: false,
-      check7: false,
-      check8: false,
-      check9: false,
-      check10: false,
-      check11: false,
-      check12: false,
-      check13: false,
-      check14: false,
-      check15: false,
-    },
-    init
-  );
   const editMode = !data;
+  const [state, dispatch] = useReducer(reducer, initialValues, init);
 
   const onSubmit = () => {
     const {
@@ -171,6 +179,10 @@ const Document = () => {
       check13,
       check14,
       check15,
+      name,
+      signedBy,
+      gender,
+      registrationNumber,
     } = state;
     const result = [
       check1,
@@ -195,11 +207,11 @@ const Document = () => {
     addSurvey({
       variables: {
         input: {
-          name: "test name",
-          gender: "male",
-          signedBy: "Mr. agree",
+          name,
+          gender,
+          registrationNumber,
+          signedBy,
           signatureDataUrl: trimmedDataURL,
-          registrationNumber: "123456789",
           result,
         },
       },
@@ -215,6 +227,14 @@ const Document = () => {
     dispatch({ type: event.target.name, payload: event.target.checked });
   };
 
+  const handleTextChange = (event) => {
+    dispatch({ type: event.target.name, payload: event.target.value });
+  };
+
+  const handleRadioChange = (event) => {
+    dispatch({ type: "gender", payload: event.target.value });
+  };
+
   const checkboxCellProps = {
     padding: "none",
     align: "center",
@@ -223,7 +243,7 @@ const Document = () => {
   return (
     <Container maxWidth="lg">
       <Box py={10}>
-        {loading && <LinearProgress />}
+        {(loading || addSurveyLoading) && <LinearProgress />}
         <Typography variant="h4" align="center" gutterBottom>
           비급여 동의서 &
         </Typography>
@@ -236,16 +256,44 @@ const Document = () => {
               <TableRow>
                 <TableCell variant="head">등록번호</TableCell>
                 <TableCell colSpan={3}>
-                  <TextField fullWidth />
+                  <TextField
+                    name="registrationNumber"
+                    value={state.registrationNumber}
+                    onChange={handleTextChange}
+                    fullWidth
+                  />
                 </TableCell>
               </TableRow>
               <TableRow>
                 <TableCell variant="head">성명</TableCell>
                 <TableCell>
-                  <TextField fullWidth />
+                  <TextField
+                    name="name"
+                    onChange={handleTextChange}
+                    value={state.name}
+                    fullWidth
+                  />
                 </TableCell>
                 <TableCell>성별</TableCell>
-                <TableCell>남 여</TableCell>
+                <TableCell>
+                  <RadioGroup
+                    name="gender"
+                    value={state.gender}
+                    onChange={handleRadioChange}
+                    row
+                  >
+                    <FormControlLabel
+                      value="female"
+                      control={<Radio />}
+                      label="여"
+                    />
+                    <FormControlLabel
+                      value="male"
+                      control={<Radio />}
+                      label="남"
+                    />
+                  </RadioGroup>
+                </TableCell>
               </TableRow>
             </TableBody>
           </Table>
@@ -458,7 +506,9 @@ const Document = () => {
           <Box position="relative" display="flex" alignItems="flex-end" mb={2}>
             <SignTypo onClick={handleOpen}>동의인:</SignTypo>
             <TextField
-              // value={state}
+              name="signedBy"
+              value={state.signedBy}
+              onChange={handleTextChange}
               InputProps={{
                 endAdornment: <span onClick={() => setOpen(true)}>(인)</span>,
                 classes: { input: classes.input },
