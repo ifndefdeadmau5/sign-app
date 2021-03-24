@@ -9,6 +9,7 @@ import Document from "./Survey";
 import SignIn from "./SignIn";
 import Surveys from "./Surveys";
 import Header from "./Header";
+import SignUp from "./SignUp";
 
 const theme = createMuiTheme({
   palette: {
@@ -24,6 +25,7 @@ const theme = createMuiTheme({
 
 const client = new ApolloClient({
   uri: process.env.REACT_APP_GRAPHQL_URL,
+  credentials: "include",
   cache: new InMemoryCache(),
 });
 
@@ -37,6 +39,9 @@ function App() {
           <Switch>
             <Route exact path="/">
               <SignIn />
+            </Route>
+            <Route path="/signup">
+              <SignUp />
             </Route>
             <Route path="/survey/:id?">
               <Document />

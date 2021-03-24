@@ -9,29 +9,27 @@ import {
 import { useState } from "react";
 import { useHistory } from "react-router";
 
-const SIGN_IN = gql`
-  mutation SignIn($email: String!, $password: String!) {
-    login(email: $email, password: $password) {
-      email
-      username
-    }
+const SIGN_UP = gql`
+  mutation SignUp($email: String!, $password: String!, $username: String) {
+    signUp(email: $email, password: $password, username: $username)
   }
 `;
 
-const SignIn = () => {
-  const [signIn] = useMutation(SIGN_IN, {
-    onCompleted: ({ login }) => {
-      if (login !== "false") history.push("/surveys");
+const SignUp = () => {
+  const [signUp] = useMutation(SIGN_UP, {
+    onCompleted: (hasSucceeded) => {
+      if (hasSucceeded) history.push("/surveys");
     },
   });
   const [form, setForm] = useState({
     email: "",
+    username: "",
     password: "",
   });
   const history = useHistory();
 
   const handleSubmit = () => {
-    signIn({
+    signUp({
       variables: form,
     });
   };
@@ -58,6 +56,14 @@ const SignIn = () => {
           fullWidth
         />
         <TextField
+          name="username"
+          onChange={handleTextChange}
+          label="닉네임"
+          value={form.username}
+          variant="filled"
+          fullWidth
+        />
+        <TextField
           name="password"
           type="password"
           onChange={handleTextChange}
@@ -75,23 +81,23 @@ const SignIn = () => {
             handleSubmit();
           }}
         >
-          로그인
+          회원가입
         </Button>
       </Box>
       <Box display="flex" alignItems="center" justifyContent="flex-end">
         <Typography color="textSecondary">
-          <i>계정이 없으신가요?</i>
+          <i>이미 계정이 있으신가요?</i>
         </Typography>
         <Button
           onClick={() => {
-            history.push("/signup");
+            history.push("/");
           }}
         >
-          회원가입
+          로그인
         </Button>
       </Box>
     </Container>
   );
 };
 
-export default SignIn;
+export default SignUp;
