@@ -8,6 +8,7 @@ import {
 } from "@material-ui/core";
 import { useState } from "react";
 import { useHistory } from "react-router";
+import { authVar } from "./cache";
 
 const SIGN_IN = gql`
   mutation SignIn($email: String!, $password: String!) {
@@ -21,7 +22,12 @@ const SIGN_IN = gql`
 const SignIn = () => {
   const [signIn] = useMutation(SIGN_IN, {
     onCompleted: ({ login }) => {
-      if (login !== "false") history.push("/surveys");
+      authVar({ isAuthenticated: true });
+      window.localStorage.setItem("isAuthenticated", true);
+      history.push("/surveys");
+    },
+    onError: (e) => {
+      console.log(e);
     },
   });
   const [form, setForm] = useState({
@@ -30,7 +36,8 @@ const SignIn = () => {
   });
   const history = useHistory();
 
-  const handleSubmit = () => {
+  const handleSubmit = (e) => {
+    if (e) e.preventDefault();
     signIn({
       variables: form,
     });
@@ -42,54 +49,58 @@ const SignIn = () => {
 
   return (
     <Container maxWidth="sm">
-      <Box
-        display="flex"
-        flexDirection="column"
-        alignItems="center"
-        pt={12}
-        marginX="auto"
-      >
-        <TextField
-          name="email"
-          onChange={handleTextChange}
-          label="이메일"
-          value={form.email}
-          variant="filled"
-          fullWidth
-        />
-        <TextField
-          name="password"
-          type="password"
-          onChange={handleTextChange}
-          label="패스워드"
-          value={form.password}
-          variant="filled"
-          fullWidth
-        />
-        <Button
-          variant="contained"
-          color="secondary"
-          disableElevation
-          fullWidth
-          onClick={() => {
-            handleSubmit();
-          }}
+      <form onSubmit={handleSubmit}>
+        <Box
+          display="flex"
+          flexDirection="column"
+          alignItems="center"
+          pt={12}
+          marginX="auto"
         >
-          로그인
-        </Button>
-      </Box>
-      <Box display="flex" alignItems="center" justifyContent="flex-end">
-        <Typography color="textSecondary">
-          <i>계정이 없으신가요?</i>
-        </Typography>
-        <Button
-          onClick={() => {
-            history.push("/signup");
-          }}
-        >
-          회원가입
-        </Button>
-      </Box>
+          <TextField
+            autoComplete="email"
+            name="email"
+            onChange={handleTextChange}
+            label="이메일"
+            value={form.email}
+            variant="filled"
+            fullWidth
+          />
+          <TextField
+            name="password"
+            type="password"
+            onChange={handleTextChange}
+            label="패스워드"
+            value={form.password}
+            variant="filled"
+            fullWidth
+          />
+          <Button
+            type="submit"
+            variant="contained"
+            color="secondary"
+            disableElevation
+            fullWidth
+            onClick={() => {
+              handleSubmit();
+            }}
+          >
+            로그인
+          </Button>
+        </Box>
+        <Box display="flex" alignItems="center" justifyContent="flex-end">
+          <Typography color="textSecondary">
+            <i>계정이 없으신가요?</i>
+          </Typography>
+          <Button
+            onClick={() => {
+              history.push("/signup");
+            }}
+          >
+            회원가입
+          </Button>
+        </Box>
+      </form>
     </Container>
   );
 };

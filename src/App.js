@@ -1,15 +1,22 @@
-import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
+import {
+  ApolloClient,
+  ApolloProvider,
+  InMemoryCache,
+  useReactiveVar,
+} from "@apollo/client";
 import {
   createMuiTheme,
   CssBaseline,
   MuiThemeProvider,
 } from "@material-ui/core";
-import { BrowserRouter, Route, Switch } from "react-router-dom";
+import { BrowserRouter, Redirect, Route, Switch } from "react-router-dom";
 import Document from "./Survey";
 import SignIn from "./SignIn";
 import Surveys from "./Surveys";
 import Header from "./Header";
 import SignUp from "./SignUp";
+import { authVar } from "./cache";
+import { useEffect, useState } from "react";
 
 const theme = createMuiTheme({
   palette: {
@@ -23,13 +30,36 @@ const theme = createMuiTheme({
   },
 });
 
-const client = new ApolloClient({
-  uri: process.env.REACT_APP_GRAPHQL_URL,
-  credentials: "include",
-  cache: new InMemoryCache(),
-});
+function PrivateRoute({ children, ...rest }) {
+  const { isAuthenticated } = useReactiveVar(authVar);
+  return (
+    <Route
+      {...rest}
+      render={() => (isAuthenticated ? children : <Redirect to="/" />)}
+    />
+  );
+}
 
 function App() {
+  const [client, setClient] = useState();
+  // cache restoration
+  useEffect(() => {
+    const client = new ApolloClient({
+      uri: process.env.REACT_APP_GRAPHQL_URL,
+      credentials: "include",
+      cache: new InMemoryCache(),
+    });
+
+    const isAuthenticated = window.localStorage.getItem("isAuthenticated");
+    if (isAuthenticated) {
+      authVar({ isAuthenticated: true });
+    }
+
+    setClient(client);
+  }, []);
+
+  if (!client) return <span>loading...</span>;
+
   return (
     <ApolloProvider client={client}>
       <MuiThemeProvider theme={theme}>
@@ -43,12 +73,12 @@ function App() {
             <Route path="/signup">
               <SignUp />
             </Route>
-            <Route path="/survey/:id?">
+            <PrivateRoute path="/survey/:id?">
               <Document />
-            </Route>
-            <Route path="/surveys">
+            </PrivateRoute>
+            <PrivateRoute path="/surveys">
               <Surveys />
-            </Route>
+            </PrivateRoute>
           </Switch>
         </BrowserRouter>
       </MuiThemeProvider>
