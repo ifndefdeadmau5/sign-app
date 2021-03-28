@@ -84,6 +84,9 @@ const GET_SURVEY = gql`
       name
       signatureDataUrl
       result
+      registrationNumber
+      gender
+      signedBy
     }
   }
 `;
@@ -150,6 +153,11 @@ const Document = () => {
           }),
           {}
         );
+
+      initialState.name = survey.name;
+      initialState.signedBy = survey.signedBy;
+      initialState.registrationNumber = survey.registrationNumber;
+      initialState.gender = survey.gender;
 
       dispatch({
         type: "reset",
@@ -235,9 +243,18 @@ const Document = () => {
     dispatch({ type: "gender", payload: event.target.value });
   };
 
-  const checkboxCellProps = {
+  const checkboxCellParams = {
     padding: "none",
     align: "center",
+  };
+
+  const textFieldParams = {
+    ...(!editMode && {
+      InputProps: {
+        readOnly: true,
+        disableUnderline: true,
+      },
+    }),
   };
 
   return (
@@ -261,6 +278,7 @@ const Document = () => {
                     value={state.registrationNumber}
                     onChange={handleTextChange}
                     fullWidth
+                    {...textFieldParams}
                   />
                 </TableCell>
               </TableRow>
@@ -272,6 +290,7 @@ const Document = () => {
                     onChange={handleTextChange}
                     value={state.name}
                     fullWidth
+                    {...textFieldParams}
                   />
                 </TableCell>
                 <TableCell>성별</TableCell>
@@ -280,6 +299,7 @@ const Document = () => {
                     name="gender"
                     value={state.gender}
                     onChange={handleRadioChange}
+                    readOnly={!editMode}
                     row
                   >
                     <FormControlLabel
@@ -318,7 +338,7 @@ const Document = () => {
                   검사
                 </TableCell>
                 <TableCell>초음파</TableCell>
-                <TableCell {...checkboxCellProps}>
+                <TableCell {...checkboxCellParams}>
                   <CheckInput
                     name="check1"
                     checked={state.check1}
@@ -329,7 +349,7 @@ const Document = () => {
                 <TableCell>9만원</TableCell>
                 <TableCell rowSpan={8}>기타</TableCell>
                 <TableCell>조직재생주사 (DNA)</TableCell>
-                <TableCell {...checkboxCellProps}>
+                <TableCell {...checkboxCellParams}>
                   <CheckInput
                     name="check8"
                     checked={state.check8}
@@ -341,7 +361,7 @@ const Document = () => {
               </TableRow>
               <TableRow>
                 <TableCell>적외선 체열검사</TableCell>
-                <TableCell {...checkboxCellProps}>
+                <TableCell {...checkboxCellParams}>
                   <CheckInput
                     name="check2"
                     checked={state.check2}
@@ -351,7 +371,7 @@ const Document = () => {
                 </TableCell>
                 <TableCell></TableCell>
                 <TableCell>유착박리제</TableCell>
-                <TableCell {...checkboxCellProps}>
+                <TableCell {...checkboxCellParams}>
                   <CheckInput
                     name="check9"
                     checked={state.check9}
@@ -366,7 +386,7 @@ const Document = () => {
                   치료
                 </TableCell>
                 <TableCell>체외충격파치료</TableCell>
-                <TableCell {...checkboxCellProps}>
+                <TableCell {...checkboxCellParams}>
                   <CheckInput
                     name="check3"
                     checked={state.check3}
@@ -376,7 +396,7 @@ const Document = () => {
                 </TableCell>
                 <TableCell></TableCell>
                 <TableCell>ATP</TableCell>
-                <TableCell {...checkboxCellProps}>
+                <TableCell {...checkboxCellParams}>
                   <CheckInput
                     name="check10"
                     checked={state.check10}
@@ -388,7 +408,7 @@ const Document = () => {
               </TableRow>
               <TableRow>
                 <TableCell>Cryotherapy</TableCell>
-                <TableCell {...checkboxCellProps}>
+                <TableCell {...checkboxCellParams}>
                   <CheckInput
                     edit={editMode}
                     checked={state.check4}
@@ -398,7 +418,7 @@ const Document = () => {
                 </TableCell>
                 <TableCell></TableCell>
                 <TableCell>vit D</TableCell>
-                <TableCell {...checkboxCellProps}>
+                <TableCell {...checkboxCellParams}>
                   <CheckInput
                     name="check11"
                     checked={state.check11}
@@ -410,7 +430,7 @@ const Document = () => {
               </TableRow>
               <TableRow>
                 <TableCell>도수치료</TableCell>
-                <TableCell {...checkboxCellProps}>
+                <TableCell {...checkboxCellParams}>
                   <CheckInput
                     edit={editMode}
                     checked={state.check5}
@@ -420,7 +440,7 @@ const Document = () => {
                 </TableCell>
                 <TableCell></TableCell>
                 <TableCell>혈관 영양주사</TableCell>
-                <TableCell {...checkboxCellProps}>
+                <TableCell {...checkboxCellParams}>
                   <CheckInput
                     name="check12"
                     checked={state.check12}
@@ -432,7 +452,7 @@ const Document = () => {
               </TableRow>
               <TableRow>
                 <TableCell>Painscrambler</TableCell>
-                <TableCell {...checkboxCellProps}>
+                <TableCell {...checkboxCellParams}>
                   <CheckInput
                     name="check6"
                     checked={state.check6}
@@ -442,7 +462,7 @@ const Document = () => {
                 </TableCell>
                 <TableCell></TableCell>
                 <TableCell>대상포진 예방접종</TableCell>
-                <TableCell {...checkboxCellProps}>
+                <TableCell {...checkboxCellParams}>
                   <CheckInput
                     name="check13"
                     checked={state.check13}
@@ -455,7 +475,7 @@ const Document = () => {
               </TableRow>
               <TableRow>
                 <TableCell>증식치료</TableCell>
-                <TableCell {...checkboxCellProps}>
+                <TableCell {...checkboxCellParams}>
                   <CheckInput
                     name="check7"
                     checked={state.check7}
@@ -465,7 +485,7 @@ const Document = () => {
                 </TableCell>
                 <TableCell></TableCell>
                 <TableCell>독감 예방접종</TableCell>
-                <TableCell {...checkboxCellProps}>
+                <TableCell {...checkboxCellParams}>
                   <CheckInput
                     name="check14"
                     checked={state.check14}
@@ -478,10 +498,10 @@ const Document = () => {
               <TableRow>
                 <TableCell variant="head">기타</TableCell>
                 <TableCell></TableCell>
-                <TableCell {...checkboxCellProps}></TableCell>
+                <TableCell {...checkboxCellParams}></TableCell>
                 <TableCell></TableCell>
                 <TableCell>토마스칼라(목보호대)</TableCell>
-                <TableCell {...checkboxCellProps}>
+                <TableCell {...checkboxCellParams}>
                   <CheckInput
                     name="check15"
                     checked={state.check15}

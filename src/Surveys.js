@@ -37,7 +37,9 @@ const GET_SURVEYS = gql`
 `;
 
 const Surveys = () => {
-  const { data, loading } = useQuery(GET_SURVEYS);
+  const { data, loading } = useQuery(GET_SURVEYS, {
+    fetchPolicy: "cache-and-network",
+  });
   const history = useHistory();
   const classes = useStyles();
 
