@@ -60,7 +60,7 @@ function App() {
     }
 
     setClient(client);
-  }, []);
+  }, [enqueueSnackbar]);
 
   if (!client) return <span>loading...</span>;
 

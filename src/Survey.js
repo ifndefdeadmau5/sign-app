@@ -1,6 +1,7 @@
 import ReactSignatureCanvas from "react-signature-canvas";
 import React, { useRef, useState } from "react";
 import { makeStyles, styled } from "@material-ui/core/styles";
+import { useReactToPrint } from "react-to-print";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import MuiTableCell from "@material-ui/core/TableCell";
@@ -17,16 +18,23 @@ import {
   DialogContent,
   DialogTitle,
   FormControlLabel,
+  IconButton,
   LinearProgress,
   Radio,
   RadioGroup,
   TextField,
+  Tooltip,
   Typography,
 } from "@material-ui/core";
-import { Check, CheckBox, CheckBoxOutlineBlank } from "@material-ui/icons";
+import {
+  Check,
+  CheckBox,
+  CheckBoxOutlineBlank,
+  Print,
+} from "@material-ui/icons";
 import { useReducer } from "react";
 import { gql, useMutation, useQuery } from "@apollo/client";
-import { useParams } from "react-router";
+import { useHistory, useParams } from "react-router";
 
 const useStyles = makeStyles((theme) => ({
   signPad: {
@@ -107,7 +115,7 @@ const CheckInput = ({ edit, ...props }) => {
       {...props}
     />
   ) : props.checked ? (
-    <Check fontSize="large" />
+    <Check fontSize="small" />
   ) : null;
 };
 
@@ -131,10 +139,12 @@ const initialValues = {
   signedBy: "",
   registrationNumber: "",
   gender: "male",
+  signedAt: "",
 };
 
 const Document = () => {
   const classes = useStyles();
+  const history = useHistory();
   const padRef = useRef();
   const [open, setOpen] = useState(false);
   const [trimmedDataURL, setTrimmedDataURL] = useState("");
@@ -166,7 +176,12 @@ const Document = () => {
       setTrimmedDataURL(survey.signatureDataUrl);
     },
   });
-  const [addSurvey, { loading: addSurveyLoading }] = useMutation(ADD_SURVEY);
+  const [addSurvey, { loading: addSurveyLoading }] = useMutation(ADD_SURVEY, {
+    onCompleted: () => {
+      history.push("/surveys");
+    },
+    refetchQueries: ["GetSurveys"],
+  });
   const editMode = !data;
   const [state, dispatch] = useReducer(reducer, initialValues, init);
 
@@ -240,7 +255,17 @@ const Document = () => {
   };
 
   const handleRadioChange = (event) => {
+    if (!editMode) return;
     dispatch({ type: "gender", payload: event.target.value });
+  };
+
+  const componentRef = useRef(null);
+  const handlePrint = useReactToPrint({
+    content: () => componentRef.current,
+  });
+
+  const handleDateChange = (event) => {
+    dispatch({ type: "signedAt", payload: event.target.value });
   };
 
   const checkboxCellParams = {
@@ -259,16 +284,30 @@ const Document = () => {
 
   return (
     <Container maxWidth="lg">
-      <Box py={10}>
+      <Box display="flex" justifyContent="flex-end">
+        <Tooltip title="인쇄하기">
+          <IconButton color="secondary" onClick={handlePrint}>
+            <Print />
+          </IconButton>
+        </Tooltip>
+      </Box>
+      <Box
+        ref={componentRef}
+        width="210mm"
+        border="1px solid black"
+        paddingY={10}
+        paddingX={5}
+        marginX="auto"
+      >
         {(loading || addSurveyLoading) && <LinearProgress />}
-        <Typography variant="h4" align="center" gutterBottom>
+        <Typography variant="h6" align="center" gutterBottom>
           비급여 동의서 &
         </Typography>
-        <Typography variant="h4" align="center" gutterBottom>
+        <Typography variant="h6" align="center" gutterBottom>
           주사치료시 발생가능한 부작용에 대한 설명
         </Typography>
         <TableContainer className={classes.firstTable}>
-          <Table>
+          <Table padding="checkbox" size="small">
             <TableBody>
               <TableRow>
                 <TableCell variant="head">등록번호</TableCell>
@@ -299,7 +338,6 @@ const Document = () => {
                     name="gender"
                     value={state.gender}
                     onChange={handleRadioChange}
-                    readOnly={!editMode}
                     row
                   >
                     <FormControlLabel
@@ -319,7 +357,7 @@ const Document = () => {
           </Table>
         </TableContainer>
         <TableContainer>
-          <Table aria-label="spanning table">
+          <Table aria-label="spanning table" padding="checkbox" size="small">
             <TableHead>
               <TableRow>
                 <TableCell>항목</TableCell>
@@ -522,7 +560,7 @@ const Document = () => {
           >
             {"2021년          월          일"}
           </SignTypo>
-
+          <input type="date" onChange={handleDateChange} />
           <Box position="relative" display="flex" alignItems="flex-end" mb={2}>
             <SignTypo onClick={handleOpen}>동의인:</SignTypo>
             <TextField
@@ -575,6 +613,8 @@ const Document = () => {
             <Button onClick={() => setOpen(false)}>Cancel</Button>
           </DialogActions>
         </Dialog>
+      </Box>
+      {editMode && (
         <Box width={1} display="flex" justifyContent="flex-end" p={5}>
           <Button
             color="primary"
@@ -586,7 +626,7 @@ const Document = () => {
             완료
           </Button>
         </Box>
-      </Box>
+      )}
     </Container>
   );
 };

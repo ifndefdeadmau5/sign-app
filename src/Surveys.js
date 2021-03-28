@@ -50,7 +50,6 @@ const Surveys = () => {
   };
 
   const handleNewDocumentClick = () => {
-    // handleClose();
     history.push("/survey");
   };
 
