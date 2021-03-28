@@ -1,14 +1,12 @@
 import {
   ApolloClient,
+  ApolloLink,
   ApolloProvider,
+  HttpLink,
   InMemoryCache,
   useReactiveVar,
 } from "@apollo/client";
-import {
-  createMuiTheme,
-  CssBaseline,
-  MuiThemeProvider,
-} from "@material-ui/core";
+import { onError } from "@apollo/client/link/error";
 import { BrowserRouter, Redirect, Route, Switch } from "react-router-dom";
 import Document from "./Survey";
 import SignIn from "./SignIn";
@@ -17,18 +15,7 @@ import Header from "./Header";
 import SignUp from "./SignUp";
 import { authVar } from "./cache";
 import { useEffect, useState } from "react";
-
-const theme = createMuiTheme({
-  palette: {
-    type: "light",
-    primary: {
-      main: "#434C5E",
-    },
-    secondary: {
-      main: "#4C566A",
-    },
-  },
-});
+import { useSnackbar } from "notistack";
 
 function PrivateRoute({ children, ...rest }) {
   const { isAuthenticated } = useReactiveVar(authVar);
@@ -42,12 +29,29 @@ function PrivateRoute({ children, ...rest }) {
 
 function App() {
   const [client, setClient] = useState();
+  const { enqueueSnackbar } = useSnackbar();
   // cache restoration
   useEffect(() => {
     const client = new ApolloClient({
-      uri: process.env.REACT_APP_GRAPHQL_URL,
-      credentials: "include",
       cache: new InMemoryCache(),
+      link: ApolloLink.from([
+        onError(({ graphQLErrors, networkError = {} }) => {
+          const graphQLErrorMessage = graphQLErrors?.[0]?.message ?? "";
+          const networkErrorMessage = networkError?.message ?? "";
+          const snackbarMessage = networkErrorMessage || graphQLErrorMessage;
+          if (graphQLErrorMessage === "Not Authorised!") {
+            localStorage.clear();
+            authVar({ isAuthenticated: false });
+            return;
+          } else {
+            enqueueSnackbar(snackbarMessage, { variant: "error" });
+          }
+        }),
+        new HttpLink({
+          uri: process.env.REACT_APP_GRAPHQL_URL,
+          credentials: "include",
+        }),
+      ]),
     });
 
     const isAuthenticated = window.localStorage.getItem("isAuthenticated");
@@ -62,26 +66,23 @@ function App() {
 
   return (
     <ApolloProvider client={client}>
-      <MuiThemeProvider theme={theme}>
-        <CssBaseline />
-        <BrowserRouter>
-          <Header />
-          <Switch>
-            <Route exact path="/">
-              <SignIn />
-            </Route>
-            <Route path="/signup">
-              <SignUp />
-            </Route>
-            <PrivateRoute path="/survey/:id?">
-              <Document />
-            </PrivateRoute>
-            <PrivateRoute path="/surveys">
-              <Surveys />
-            </PrivateRoute>
-          </Switch>
-        </BrowserRouter>
-      </MuiThemeProvider>
+      <BrowserRouter>
+        <Header />
+        <Switch>
+          <Route exact path="/">
+            <SignIn />
+          </Route>
+          <Route path="/signup">
+            <SignUp />
+          </Route>
+          <PrivateRoute path="/survey/:id?">
+            <Document />
+          </PrivateRoute>
+          <PrivateRoute path="/surveys">
+            <Surveys />
+          </PrivateRoute>
+        </Switch>
+      </BrowserRouter>
     </ApolloProvider>
   );
 }

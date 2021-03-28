@@ -36,8 +36,8 @@ const SignIn = () => {
   });
   const history = useHistory();
 
-  const handleSubmit = (e) => {
-    if (e) e.preventDefault();
+  const handleSubmit = (event) => {
+    event.preventDefault();
     signIn({
       variables: form,
     });
@@ -81,9 +81,6 @@ const SignIn = () => {
             color="secondary"
             disableElevation
             fullWidth
-            onClick={() => {
-              handleSubmit();
-            }}
           >
             로그인
           </Button>
