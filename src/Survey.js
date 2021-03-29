@@ -95,6 +95,7 @@ const GET_SURVEY = gql`
       registrationNumber
       gender
       signedBy
+      relationship
     }
   }
 `;
@@ -137,6 +138,7 @@ const initialValues = {
   check15: false,
   name: "",
   signedBy: "",
+  relationship: "",
   registrationNumber: "",
   gender: "male",
   signedAt: "",
@@ -166,6 +168,7 @@ const Document = () => {
 
       initialState.name = survey.name;
       initialState.signedBy = survey.signedBy;
+      initialState.relationship = survey.relationship;
       initialState.registrationNumber = survey.registrationNumber;
       initialState.gender = survey.gender;
 
@@ -204,6 +207,7 @@ const Document = () => {
       check15,
       name,
       signedBy,
+      relationship,
       gender,
       registrationNumber,
     } = state;
@@ -234,6 +238,7 @@ const Document = () => {
           gender,
           registrationNumber,
           signedBy,
+          relationship,
           signatureDataUrl: trimmedDataURL,
           result,
         },
@@ -263,10 +268,6 @@ const Document = () => {
   const handlePrint = useReactToPrint({
     content: () => componentRef.current,
   });
-
-  const handleDateChange = (event) => {
-    dispatch({ type: "signedAt", payload: event.target.value });
-  };
 
   const checkboxCellParams = {
     padding: "none",
@@ -558,9 +559,12 @@ const Document = () => {
             style={{ whiteSpace: "pre", marginBottom: 24 }}
             align="right"
           >
-            {"2021년          월          일"}
+            {new Date().toLocaleDateString("ko-KR", {
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            })}
           </SignTypo>
-          <input type="date" onChange={handleDateChange} />
           <Box position="relative" display="flex" alignItems="flex-end" mb={2}>
             <SignTypo onClick={handleOpen}>동의인:</SignTypo>
             <TextField
@@ -577,6 +581,9 @@ const Document = () => {
           <Box position="relative" display="flex" alignItems="flex-end">
             <SignTypo onClick={handleOpen}>환자와의 관계:</SignTypo>
             <TextField
+              name="relationship"
+              value={state.relationship}
+              onChange={handleTextChange}
               InputProps={{
                 endAdornment: <span onClick={() => setOpen(true)}>(인)</span>,
                 classes: { input: classes.input },

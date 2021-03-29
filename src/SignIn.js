@@ -3,6 +3,7 @@ import {
   Box,
   Button,
   Container,
+  LinearProgress,
   TextField,
   Typography,
 } from "@material-ui/core";
@@ -20,7 +21,7 @@ const SIGN_IN = gql`
 `;
 
 const SignIn = () => {
-  const [signIn] = useMutation(SIGN_IN, {
+  const [signIn, { loading }] = useMutation(SIGN_IN, {
     onCompleted: ({ login }) => {
       authVar({ isAuthenticated: true });
       window.localStorage.setItem("isAuthenticated", true);
@@ -50,13 +51,8 @@ const SignIn = () => {
   return (
     <Container maxWidth="sm">
       <form onSubmit={handleSubmit}>
-        <Box
-          display="flex"
-          flexDirection="column"
-          alignItems="center"
-          pt={12}
-          marginX="auto"
-        >
+        <Box display="flex" flexDirection="column" pt={12} marginX="auto">
+          {loading && <LinearProgress />}
           <TextField
             autoComplete="email"
             name="email"
@@ -80,6 +76,7 @@ const SignIn = () => {
             variant="contained"
             color="secondary"
             disableElevation
+            disabled={loading}
             fullWidth
           >
             로그인

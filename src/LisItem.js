@@ -9,9 +9,11 @@ import {
 } from "@mui-treasury/components/info";
 import { useDynamicAvatarStyles } from "@mui-treasury/styles/avatar/dynamic";
 import { usePopularInfoStyles } from "@mui-treasury/styles/info/popular";
+import { format } from "date-fns";
 
 export const SurveyItem = React.memo(function PopularListItem({
   name,
+  registrationNumber,
   createdAt,
   imgUrl,
   onClick,
@@ -21,6 +23,8 @@ export const SurveyItem = React.memo(function PopularListItem({
     width: 64,
     radius: 8,
   });
+
+  console.log(createdAt);
   return (
     <>
       <Row gap={3} onClick={onClick}>
@@ -29,9 +33,9 @@ export const SurveyItem = React.memo(function PopularListItem({
         </Item>
         <Info useStyles={usePopularInfoStyles}>
           <InfoSubtitle>{name}</InfoSubtitle>
-          <InfoTitle>동의서 기본양식</InfoTitle>
+          <InfoTitle>{registrationNumber}</InfoTitle>
           <InfoCaption>
-            {new Date(Number(createdAt)).toLocaleTimeString()}
+            {format(new Date(Number(createdAt)), "yyyy년 MM월 dd일 HH시 mm분")}
           </InfoCaption>
         </Info>
       </Row>
