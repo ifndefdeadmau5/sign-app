@@ -8,7 +8,7 @@ import {
 } from "@apollo/client";
 import { onError } from "@apollo/client/link/error";
 import { BrowserRouter, Redirect, Route, Switch } from "react-router-dom";
-import Document from "./Survey";
+import SurveyA from "./Survey";
 import SignIn from "./SignIn";
 import Surveys from "./Surveys";
 import Header from "./Header";
@@ -16,6 +16,7 @@ import SignUp from "./SignUp";
 import { authVar } from "./cache";
 import { useEffect, useState } from "react";
 import { useSnackbar } from "notistack";
+import SurveyB from "./SurveyB";
 
 function PrivateRoute({ children, ...rest }) {
   const { isAuthenticated } = useReactiveVar(authVar);
@@ -76,7 +77,10 @@ function App() {
             <SignUp />
           </Route>
           <PrivateRoute path="/survey/:id?">
-            <Document />
+            <SurveyA />
+          </PrivateRoute>
+          <PrivateRoute path="/survey-b/:id?">
+            <SurveyB />
           </PrivateRoute>
           <PrivateRoute path="/surveys">
             <Surveys />

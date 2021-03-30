@@ -39,6 +39,7 @@ const GET_SURVEYS = gql`
   query GetSurveys($createdAt: String) {
     surveys(createdAt: $createdAt) {
       id
+      type
       name
       registrationNumber
       createdAt
@@ -67,8 +68,12 @@ const Surveys = () => {
     setAnchorEl(event.currentTarget);
   };
 
-  const handleNewDocumentClick = () => {
+  const handleSurveyAClick = () => {
     history.push("/survey");
+  };
+
+  const handleSurveyBClick = () => {
+    history.push("/survey-b");
   };
 
   const handleClose = () => {
@@ -94,7 +99,6 @@ const Surveys = () => {
     <Container maxWidth="sm">
       <Box pt={7}>
         <Paper variant="outlined">
-          {loading && <CircularProgress />}
           <Box p={3}>
             <Typography variant="h6" gutterBottom>
               조건으로 검색
@@ -142,15 +146,17 @@ const Surveys = () => {
               </Button>
             </Box>
           </Box>
-
+          {loading && <CircularProgress />}
           <Divider />
           <List>
             {data &&
               data.surveys.map(
-                ({ id, name, createdAt, registrationNumber }, i) => (
+                ({ id, name, createdAt, registrationNumber, type }, i) => (
                   <React.Fragment key={id}>
                     <SurveyItem
-                      onClick={() => history.push(`/survey/${id}`)}
+                      onClick={() =>
+                        history.push(`/survey-${type.toLowerCase()}/${id}`)
+                      }
                       name={name}
                       createdAt={createdAt}
                       registrationNumber={registrationNumber}
@@ -169,8 +175,11 @@ const Surveys = () => {
         open={Boolean(anchorEl)}
         onClose={handleClose}
       >
-        <MenuItem onClick={handleNewDocumentClick}>
+        <MenuItem onClick={handleSurveyAClick}>
           기본 양식으로 새로 만들기
+        </MenuItem>
+        <MenuItem onClick={handleSurveyBClick}>
+          시술청약서 & 비급여 사전설명 확인서
         </MenuItem>
       </Menu>
       <Fab

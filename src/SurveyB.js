@@ -19,7 +19,9 @@ import {
   DialogTitle,
   FormControlLabel,
   IconButton,
+  InputLabel,
   LinearProgress,
+  MenuItem,
   Radio,
   RadioGroup,
   TextField,
@@ -35,6 +37,7 @@ import {
 import { useReducer } from "react";
 import { gql, useMutation, useQuery } from "@apollo/client";
 import { useHistory, useParams } from "react-router";
+import Logo from "./image/logo.png";
 
 const useStyles = makeStyles((theme) => ({
   signPad: {
@@ -52,8 +55,14 @@ const useStyles = makeStyles((theme) => ({
     textAlign: "right",
     paddingRight: theme.spacing(1),
   },
-  firstTable: {
-    marginBottom: theme.spacing(3),
+  select: {
+    minWidth: 200,
+    marginLeft: theme.spacing(2),
+  },
+  subTitle: {
+    fontSize: theme.typography.pxToRem(18),
+    fontWeight: 500,
+    textDecoration: "underline",
   },
 }));
 
@@ -76,6 +85,7 @@ const SignedImage = styled("img")({
 });
 
 function reducer(state, action) {
+  console.log(action);
   const { type, payload } = action;
   if (type === "reset") return payload;
   return { ...state, [type]: payload };
@@ -88,7 +98,6 @@ function init(initialState) {
 const GET_SURVEY = gql`
   query Survey($id: ID!) {
     survey(id: $id) {
-      id
       name
       signatureDataUrl
       result
@@ -96,6 +105,8 @@ const GET_SURVEY = gql`
       gender
       signedBy
       relationship
+      doctor
+      operation
     }
   }
 `;
@@ -141,9 +152,11 @@ const initialValues = {
   relationship: "",
   registrationNumber: "",
   gender: "male",
+  doctor: "",
+  operation: "",
 };
 
-const Document = () => {
+const SurveyB = () => {
   const classes = useStyles();
   const history = useHistory();
   const padRef = useRef();
@@ -154,7 +167,8 @@ const Document = () => {
     variables: { id },
     skip: !id,
     onCompleted: ({ survey }) => {
-      const initialState = survey.result
+      const { result, ...rest } = survey;
+      const initialState = result
         .split(",")
         .map(Number)
         .reduce(
@@ -165,15 +179,9 @@ const Document = () => {
           {}
         );
 
-      initialState.name = survey.name;
-      initialState.signedBy = survey.signedBy;
-      initialState.relationship = survey.relationship;
-      initialState.registrationNumber = survey.registrationNumber;
-      initialState.gender = survey.gender;
-
       dispatch({
         type: "reset",
-        payload: { ...initialValues, ...initialState },
+        payload: { ...initialValues, ...initialState, ...rest },
       });
       setTrimmedDataURL(survey.signatureDataUrl);
     },
@@ -204,11 +212,7 @@ const Document = () => {
       check13,
       check14,
       check15,
-      name,
-      signedBy,
-      relationship,
-      gender,
-      registrationNumber,
+      ...rest
     } = state;
     const result = [
       check1,
@@ -233,13 +237,10 @@ const Document = () => {
     addSurvey({
       variables: {
         input: {
-          name,
-          gender,
-          registrationNumber,
-          signedBy,
-          relationship,
-          signatureDataUrl: trimmedDataURL,
+          type: "B",
           result,
+          signatureDataUrl: trimmedDataURL,
+          ...rest,
         },
       },
     });
@@ -281,6 +282,7 @@ const Document = () => {
       },
     }),
   };
+  console.log(state);
 
   return (
     <Container maxWidth="lg">
@@ -294,24 +296,21 @@ const Document = () => {
       <Box
         ref={componentRef}
         width="210mm"
-        border="1px solid black"
-        paddingY={10}
+        paddingTop={3}
+        paddingBottom={10}
         paddingX={5}
         marginX="auto"
       >
         {(loading || addSurveyLoading) && <LinearProgress />}
         <Typography variant="h6" align="center" gutterBottom>
-          비급여 동의서 &
-        </Typography>
-        <Typography variant="h6" align="center" gutterBottom>
-          주사치료시 발생가능한 부작용에 대한 설명
+          시술청약서 & 비급여 사전설명 확인서
         </Typography>
         <TableContainer className={classes.firstTable}>
           <Table padding="checkbox" size="small">
             <TableBody>
               <TableRow>
                 <TableCell variant="head">등록번호</TableCell>
-                <TableCell colSpan={3}>
+                <TableCell>
                   <TextField
                     name="registrationNumber"
                     value={state.registrationNumber}
@@ -320,8 +319,6 @@ const Document = () => {
                     {...textFieldParams}
                   />
                 </TableCell>
-              </TableRow>
-              <TableRow>
                 <TableCell variant="head">성명</TableCell>
                 <TableCell>
                   <TextField
@@ -332,32 +329,138 @@ const Document = () => {
                     {...textFieldParams}
                   />
                 </TableCell>
+              </TableRow>
+              <TableRow>
                 <TableCell>성별</TableCell>
                 <TableCell>
-                  <RadioGroup
-                    name="gender"
-                    value={state.gender}
-                    onChange={handleRadioChange}
-                    row
-                  >
-                    <FormControlLabel
-                      value="male"
-                      control={<Radio />}
-                      label="남"
-                    />
-                    <FormControlLabel
-                      value="female"
-                      control={<Radio />}
-                      label="여"
-                    />
-                  </RadioGroup>
+                  {editMode ? (
+                    <RadioGroup
+                      name="gender"
+                      value={state.gender}
+                      onChange={handleRadioChange}
+                      row
+                    >
+                      <FormControlLabel
+                        value="male"
+                        control={<Radio />}
+                        label="남"
+                      />
+                      <FormControlLabel
+                        value="female"
+                        control={<Radio />}
+                        label="여"
+                      />
+                    </RadioGroup>
+                  ) : (
+                    <Typography>
+                      {state.gender === "male" ? "남" : "여"}
+                    </Typography>
+                  )}
+                </TableCell>
+                <TableCell variant="head">주치의</TableCell>
+                <TableCell>
+                  {editMode ? (
+                    <TextField
+                      name="doctor"
+                      value={state.doctor}
+                      onChange={handleTextChange}
+                      size="small"
+                      fullWidth
+                      select
+                      {...textFieldParams}
+                    >
+                      <MenuItem value={"문동언"}>문동언</MenuItem>
+                      <MenuItem value={"배현민"}>배현민</MenuItem>
+                    </TextField>
+                  ) : (
+                    <Typography>{state.doctor}</Typography>
+                  )}
                 </TableCell>
               </TableRow>
             </TableBody>
           </Table>
         </TableContainer>
+
+        <Box display="flex" alignItems="flex-end">
+          <Typography className={classes.subTitle}>시술명</Typography>
+          {editMode ? (
+            <TextField
+              className={classes.select}
+              name="operation"
+              value={state.operation}
+              onChange={handleTextChange}
+              size="small"
+              select
+              {...textFieldParams}
+            >
+              <MenuItem value={"경막 외 신경성형술"}>
+                경막 외 신경성형술
+              </MenuItem>
+              <MenuItem value={"추간공성형술"}>추간공성형술</MenuItem>
+              <MenuItem value={"고주파 수핵감압술"}>고주파 수핵감압술</MenuItem>
+              <MenuItem value={"경피적 척추성형술"}>경피적 척추성형술</MenuItem>
+              <MenuItem value={"고주파열응고술"}>고주파열응고술</MenuItem>
+            </TextField>
+          ) : (
+            <Typography className={classes.select}>
+              {state.operation}
+            </Typography>
+          )}
+        </Box>
+        <Typography className={classes.subTitle}>
+          상기 시술의 위험가능성 및 합병증 설명
+        </Typography>
+        <ol style={{ margin: 0 }}>
+          <li>일시적 통증 악화, 통증 완화 후 재발 또는 지속 가능</li>
+          <li>
+            시술 후 추가 주사치료 및 지속적인 약물 복용이 필요 할 수 있으며,
+            수술이 필요한 경우도 있습니다.
+          </li>
+          <li>
+            알러지 반응(약물, 조영제), 저혈압, 뇌척수액 유출, 두통, 호흡곤란,
+            의식소실
+          </li>
+          <li>
+            시술 전 신경손상의 가능성이 있는 경우라면 시술 후 증상이 지속될
+            가능성이 있습니다.
+          </li>
+          <li>시술부위 감염, 혈종, 신경손상, 이상감각, 마비증상</li>
+          <li>
+            시술 전/ 시술 후 내원시 : 복용하시는 약물 중 아스피린이나 혈전용해제
+            등의 약물이 포함되어있는 경우 담당 주치의와 복용중단이 가능한지 확인
+            후 시술이나 주사치료 전에 아스피린이나 혈전용해제를 중단 후
+            내원해주세요. 혈류개선제(오팔몬, 징코, 오메가3 등) 도 5일간 중단 후
+            내원해주세요
+          </li>
+        </ol>
+        <p>
+          본인(또는 보호자)은 상기와 같이 시술의 필요성과 그 내용, 예상되는
+          합병증 및 후유증에 대하여 의사에게 충분한 설명을 들었으며,
+          불가항력적으로 발생할 수 있는 합병증 또는 환자의 특이체질로 우발적
+          사고가 일어날 수도 있다는 것을 사전설명으로 충분히 이해하고 위 시술을
+          신청합니다.
+        </p>
+        <Typography className={classes.subTitle}>
+          비급여 사전설명 확인서
+        </Typography>
+        <p style={{ margin: 0, marginBottom: 16 }}>
+          본인은 국민건강보험 요양급여가 적용되지 않는{" "}
+          <b>
+            <u>비급여 진료행위 또는 약제, 치료재료</u>
+          </b>
+          를 사용하는 것에 대해{" "}
+          <b>
+            <u>충분히 설명을 듣고</u>
+          </b>{" "}
+          주치의와 함께 치료방향을 결정하였습니다
+        </p>
         <TableContainer>
-          <Table aria-label="spanning table" padding="checkbox" size="small">
+          <Table
+            aria-label="spanning table"
+            padding="checkbox"
+            size="small"
+            style={{ whiteSpace: "pre" }}
+          >
             <TableHead>
               <TableRow>
                 <TableCell>항목</TableCell>
@@ -619,6 +722,9 @@ const Document = () => {
             <Button onClick={() => setOpen(false)}>Cancel</Button>
           </DialogActions>
         </Dialog>
+        <Box mx="auto" width="fit-content">
+          <img src={Logo} alt="logo" style={{ width: 206, height: 62 }} />
+        </Box>
       </Box>
       {editMode && (
         <Box width={1} display="flex" justifyContent="flex-end" p={5}>
@@ -637,4 +743,4 @@ const Document = () => {
   );
 };
 
-export default Document;
+export default SurveyB;
