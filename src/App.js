@@ -17,6 +17,7 @@ import { authVar } from "./cache";
 import { useEffect, useState } from "react";
 import { useSnackbar } from "notistack";
 import SurveyB from "./SurveyB";
+import SurveyC from "./SurveyC";
 
 function PrivateRoute({ children, ...rest }) {
   const { isAuthenticated } = useReactiveVar(authVar);
@@ -76,11 +77,14 @@ function App() {
           <Route path="/signup">
             <SignUp />
           </Route>
-          <PrivateRoute path="/survey/:id?">
+          <PrivateRoute path="/survey-a/:id?">
             <SurveyA />
           </PrivateRoute>
           <PrivateRoute path="/survey-b/:id?">
             <SurveyB />
+          </PrivateRoute>
+          <PrivateRoute path="/survey-c/:id?">
+            <SurveyC />
           </PrivateRoute>
           <PrivateRoute path="/surveys">
             <Surveys />

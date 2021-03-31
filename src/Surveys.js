@@ -69,11 +69,15 @@ const Surveys = () => {
   };
 
   const handleSurveyAClick = () => {
-    history.push("/survey");
+    history.push("/survey-a");
   };
 
   const handleSurveyBClick = () => {
     history.push("/survey-b");
+  };
+
+  const handleSurveyCClick = () => {
+    history.push("/survey-c");
   };
 
   const handleClose = () => {
@@ -176,10 +180,13 @@ const Surveys = () => {
         onClose={handleClose}
       >
         <MenuItem onClick={handleSurveyAClick}>
-          기본 양식으로 새로 만들기
+          비급여 동의서 & 주사치료시 발생가능한 부작용에 대한 설명
         </MenuItem>
         <MenuItem onClick={handleSurveyBClick}>
           시술청약서 & 비급여 사전설명 확인서
+        </MenuItem>
+        <MenuItem onClick={handleSurveyCClick}>
+          주사치료 청약서 & 비급여 사전설명 확인서
         </MenuItem>
       </Menu>
       <Fab
