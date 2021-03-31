@@ -8,7 +8,7 @@ import {
 } from "@apollo/client";
 import { onError } from "@apollo/client/link/error";
 import { BrowserRouter, Redirect, Route, Switch } from "react-router-dom";
-import SurveyA from "./Survey";
+import SurveyA from "./SurveyA";
 import SignIn from "./SignIn";
 import Surveys from "./Surveys";
 import Header from "./Header";
