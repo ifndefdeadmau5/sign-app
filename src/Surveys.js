@@ -14,7 +14,7 @@ import {
   TextField,
   Typography,
 } from "@material-ui/core";
-import { Add } from "@material-ui/icons";
+import { Add, FilterSharp } from "@material-ui/icons";
 import { format } from "date-fns";
 import React from "react";
 import { useState } from "react";
@@ -36,8 +36,16 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const GET_SURVEYS = gql`
-  query GetSurveys($createdAt: String) {
-    surveys(createdAt: $createdAt) {
+  query GetSurveys(
+    $createdAt: String
+    $name: String
+    $registrationNumber: String
+  ) {
+    surveys(
+      createdAt: $createdAt
+      name: $name
+      registrationNumber: $registrationNumber
+    ) {
       id
       type
       name
@@ -95,6 +103,8 @@ const Surveys = () => {
     getSurveys({
       variables: {
         createdAt: new Date(filters.createdAt).toISOString(),
+        name: filters.name,
+        registrationNumber: filters.registrationNumber,
       },
     });
   };
