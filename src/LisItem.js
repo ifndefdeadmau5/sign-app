@@ -24,7 +24,6 @@ export const SurveyItem = React.memo(function PopularListItem({
     radius: 8,
   });
 
-  console.log(createdAt);
   return (
     <>
       <Row gap={3} onClick={onClick}>

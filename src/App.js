@@ -32,6 +32,17 @@ function PrivateRoute({ children, ...rest }) {
 function App() {
   const [client, setClient] = useState();
   const { enqueueSnackbar } = useSnackbar();
+
+  const expireTime = Number(localStorage?.getItem("expireTime"));
+
+  useEffect(() => {
+    const now = new Date();
+    if (expireTime && new Date(expireTime) < now) {
+      authVar({ isAuthenticated: false });
+      window.localStorage.clear();
+    }
+  }, [expireTime]);
+
   // cache restoration
   useEffect(() => {
     const client = new ApolloClient({
@@ -41,9 +52,13 @@ function App() {
           const graphQLErrorMessage = graphQLErrors?.[0]?.message ?? "";
           const networkErrorMessage = networkError?.message ?? "";
           const snackbarMessage = networkErrorMessage || graphQLErrorMessage;
-          if (graphQLErrorMessage === "Not Authorised!") {
+          if (graphQLErrors[0].extensions.code === "UNAUTHENTICATED") {
             localStorage.clear();
             authVar({ isAuthenticated: false });
+            enqueueSnackbar(
+              "인증 토큰이 만료되었습니다. 다시 로그인 해주세요",
+              { variant: "error" }
+            );
             return;
           } else {
             enqueueSnackbar(snackbarMessage, { variant: "error" });

@@ -7,24 +7,28 @@ import {
   TextField,
   Typography,
 } from "@material-ui/core";
+import jwtDecode from "jwt-decode";
 import { useState } from "react";
 import { useHistory } from "react-router";
 import { authVar } from "./cache";
 
 const SIGN_IN = gql`
   mutation SignIn($email: String!, $password: String!) {
-    login(email: $email, password: $password) {
-      email
-      username
-    }
+    login(email: $email, password: $password)
   }
 `;
 
 const SignIn = () => {
   const [signIn, { loading }] = useMutation(SIGN_IN, {
-    onCompleted: ({ login }) => {
+    onCompleted: ({ login: token }) => {
       authVar({ isAuthenticated: true });
       window.localStorage.setItem("isAuthenticated", true);
+      const decodedToken: any = jwtDecode(token);
+      localStorage.setItem(
+        "expireTime",
+        new Date(decodedToken.exp * 1000).getTime().toString()
+      );
+
       history.push("/surveys");
     },
     onError: (e) => {
