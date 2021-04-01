@@ -32,6 +32,7 @@ function PrivateRoute({ children, ...rest }) {
 function App() {
   const [client, setClient] = useState();
   const { enqueueSnackbar } = useSnackbar();
+  const { isAuthenticated } = useReactiveVar(authVar);
 
   const expireTime = Number(localStorage?.getItem("expireTime"));
 
@@ -86,24 +87,34 @@ function App() {
       <BrowserRouter>
         <Header />
         <Switch>
-          <Route exact path="/">
-            <SignIn />
-          </Route>
-          <Route path="/signup">
-            <SignUp />
-          </Route>
-          <PrivateRoute path="/survey-a/:id?">
-            <SurveyA />
-          </PrivateRoute>
-          <PrivateRoute path="/survey-b/:id?">
-            <SurveyB />
-          </PrivateRoute>
-          <PrivateRoute path="/survey-c/:id?">
-            <SurveyC />
-          </PrivateRoute>
-          <PrivateRoute path="/surveys">
-            <Surveys />
-          </PrivateRoute>
+          {isAuthenticated ? (
+            <>
+              <PrivateRoute path="/survey-a/:id?">
+                <SurveyA />
+              </PrivateRoute>
+              <PrivateRoute path="/survey-b/:id?">
+                <SurveyB />
+              </PrivateRoute>
+              <PrivateRoute path="/survey-c/:id?">
+                <SurveyC />
+              </PrivateRoute>
+              <PrivateRoute exact path="/">
+                <Surveys />
+              </PrivateRoute>
+            </>
+          ) : (
+            <>
+              <Route exact path="/">
+                <SignIn />
+              </Route>
+              <Route path="/signup">
+                <SignUp />
+              </Route>
+              <Route path="*">
+                <SignIn />
+              </Route>
+            </>
+          )}
         </Switch>
       </BrowserRouter>
     </ApolloProvider>

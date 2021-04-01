@@ -29,7 +29,7 @@ const SignIn = () => {
         new Date(decodedToken.exp * 1000).getTime().toString()
       );
 
-      history.push("/surveys");
+      history.push("/");
     },
     onError: (e) => {
       console.log(e);

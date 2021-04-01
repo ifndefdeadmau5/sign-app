@@ -29,7 +29,7 @@ const Header = () => {
           <Menu />
         </IconButton>
         <Typography variant="body1">
-          <Link color="inherit" component={RouterLink} to="/surveys">
+          <Link color="inherit" component={RouterLink} to="/">
             동의서 목록 보기
           </Link>
         </Typography>

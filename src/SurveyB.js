@@ -187,7 +187,7 @@ const SurveyB = () => {
   });
   const [addSurvey, { loading: addSurveyLoading }] = useMutation(ADD_SURVEY, {
     onCompleted: () => {
-      history.push("/surveys");
+      history.push("/");
     },
     refetchQueries: ["GetSurveys"],
   });

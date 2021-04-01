@@ -18,7 +18,7 @@ const SIGN_UP = gql`
 const SignUp = () => {
   const [signUp] = useMutation(SIGN_UP, {
     onCompleted: (hasSucceeded) => {
-      if (hasSucceeded) history.push("/surveys");
+      if (hasSucceeded) history.push("/");
     },
   });
   const [form, setForm] = useState({
