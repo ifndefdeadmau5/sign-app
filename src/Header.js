@@ -8,12 +8,14 @@ import {
   Tooltip,
 } from "@material-ui/core";
 import { ExitToApp, Menu } from "@material-ui/icons";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink, useHistory } from "react-router-dom";
 import { authVar } from "./cache";
 
 const Header = () => {
+  const history = useHistory();
   const handleLogout = () => {
     authVar({ isAuthenticated: false });
+    history.push("/");
     window.localStorage.clear();
   };
 
