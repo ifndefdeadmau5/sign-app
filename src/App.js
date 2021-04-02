@@ -68,6 +68,7 @@ function App() {
         new HttpLink({
           uri: process.env.REACT_APP_GRAPHQL_URL,
           credentials: "include",
+          cache: "no-store",
         }),
       ]),
     });
