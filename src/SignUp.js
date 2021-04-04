@@ -3,6 +3,7 @@ import {
   Box,
   Button,
   Container,
+  LinearProgress,
   TextField,
   Typography,
 } from "@material-ui/core";
@@ -16,7 +17,7 @@ const SIGN_UP = gql`
 `;
 
 const SignUp = () => {
-  const [signUp] = useMutation(SIGN_UP, {
+  const [signUp, { loading }] = useMutation(SIGN_UP, {
     onCompleted: (hasSucceeded) => {
       if (hasSucceeded) history.push("/");
     },
@@ -47,6 +48,7 @@ const SignUp = () => {
         pt={12}
         marginX="auto"
       >
+        {loading && <LinearProgress />}
         <TextField
           name="email"
           onChange={handleTextChange}
@@ -80,6 +82,7 @@ const SignUp = () => {
           onClick={() => {
             handleSubmit();
           }}
+          disabled={loading}
         >
           회원가입
         </Button>
