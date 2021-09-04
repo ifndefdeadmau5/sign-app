@@ -318,14 +318,14 @@ const SurveyB = () => {
       >
         {(loading || addSurveyLoading) && <LinearProgress />}
         <Typography variant="h6" align="center" gutterBottom>
-          시술청약서 & 비급여 사전설명 확인서
+          <b>시술청약서 & 비급여 사전설명 확인서</b>
         </Typography>
         <TableContainer className={classes.firstTable}>
           <Table padding="checkbox" size="small">
             <TableBody>
               <TableRow>
                 <TableCell variant="head">등록번호</TableCell>
-                <TableCell>
+                <TableCell style={{ paddingBottom: "4px" }}>
                   <TextField
                     name="registrationNumber"
                     value={state.registrationNumber}
@@ -335,7 +335,7 @@ const SurveyB = () => {
                   />
                 </TableCell>
                 <TableCell variant="head">성명</TableCell>
-                <TableCell>
+                <TableCell style={{ paddingBottom: "4px" }}>
                   <TextField
                     name="name"
                     onChange={handleTextChange}
@@ -396,7 +396,7 @@ const SurveyB = () => {
           </Table>
         </TableContainer>
 
-        <Box display="flex" alignItems="flex-end">
+        <Box display="flex" alignItems="flex-end" mb={2}>
           <Typography className={classes.subTitle}>시술명</Typography>
           {editMode ? (
             <TextField
@@ -502,7 +502,7 @@ const SurveyB = () => {
                     edit={editMode}
                   />
                 </TableCell>
-                <TableCell>9만원</TableCell>
+                <TableCell></TableCell>
                 <TableCell rowSpan={8}>기타</TableCell>
                 <TableCell>조직재생주사 (DNA)</TableCell>
                 <TableCell {...checkboxCellParams}>

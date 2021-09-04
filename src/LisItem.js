@@ -27,9 +27,6 @@ export const SurveyItem = React.memo(function PopularListItem({
   return (
     <>
       <Row gap={3} onClick={onClick}>
-        <Item>
-          <Avatar variant={"rounded"} classes={avatarStyles} src={imgUrl} />
-        </Item>
         <Info useStyles={usePopularInfoStyles}>
           <InfoSubtitle>{name}</InfoSubtitle>
           <InfoTitle>{registrationNumber}</InfoTitle>
