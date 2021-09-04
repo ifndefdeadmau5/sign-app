@@ -14,7 +14,7 @@ import {
   TextField,
   Typography,
 } from "@material-ui/core";
-import { Add, FilterSharp } from "@material-ui/icons";
+import { Add } from "@material-ui/icons";
 import { format } from "date-fns";
 import React from "react";
 import { useState } from "react";

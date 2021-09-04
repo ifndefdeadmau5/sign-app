@@ -35,6 +35,7 @@ import {
 import { useReducer } from "react";
 import { gql, useMutation, useQuery } from "@apollo/client";
 import { useHistory, useParams } from "react-router";
+import Logo from "./image/logo.png";
 
 const useStyles = makeStyles((theme) => ({
   signPad: {
@@ -303,17 +304,17 @@ const SurveyA = () => {
       >
         {(loading || addSurveyLoading) && <LinearProgress />}
         <Typography variant="h6" align="center" gutterBottom>
-          비급여 동의서 &
+          <b>비급여 동의서 &</b>
         </Typography>
         <Typography variant="h6" align="center" gutterBottom>
-          주사치료시 발생가능한 부작용에 대한 설명
+          <b>주사치료시 발생가능한 부작용에 대한 설명</b>
         </Typography>
         <TableContainer className={classes.firstTable}>
           <Table padding="checkbox" size="small" style={{ whiteSpace: "pre" }}>
             <TableBody>
               <TableRow>
                 <TableCell variant="head">등록번호</TableCell>
-                <TableCell colSpan={3}>
+                <TableCell colSpan={3} style={{ paddingBottom: "4px" }}>
                   <TextField
                     name="registrationNumber"
                     value={state.registrationNumber}
@@ -391,7 +392,7 @@ const SurveyA = () => {
                     edit={editMode}
                   />
                 </TableCell>
-                <TableCell>9만원</TableCell>
+                <TableCell></TableCell>
                 <TableCell rowSpan={8}>기타</TableCell>
                 <TableCell>조직재생주사 (DNA)</TableCell>
                 <TableCell {...checkboxCellParams}>
@@ -560,7 +561,7 @@ const SurveyA = () => {
           </Table>
         </TableContainer>
         <ol style={{ margin: 0 }}>
-          <li>일시적통증악화, 통증의완화후재발또는통증의지속가능성</li>
+          <li>일시적 통증 악화, 통증의 완화 후 재발 또는 통증의 지속가능성</li>
           <li>주사약물에 의한 알러지 반응, 두통, 저혈압, 호흡곤란, 의식소실</li>
           <li>
             주사치료 부위 감염, 부종, 혈종,어지럼, 목의 불쾌감, 쉰
@@ -590,7 +591,13 @@ const SurveyA = () => {
         </p>
 
         {/* Sign 하는 부분 */}
-        <Box display="flex" flexDirection="column" alignItems="flex-end" p={3}>
+        <Box
+          display="flex"
+          flexDirection="column"
+          alignItems="flex-end"
+          p={3}
+          position="relative"
+        >
           <SignTypo
             style={{ whiteSpace: "pre", marginBottom: 24 }}
             align="right"
@@ -601,6 +608,15 @@ const SurveyA = () => {
               day: "numeric",
             })}
           </SignTypo>
+          <Box
+            style={{
+              position: "absolute",
+              left: 127,
+              bottom: 26,
+            }}
+          >
+            <img src={Logo} alt="logo" style={{ width: 206, height: 62 }} />
+          </Box>
           <Box position="relative" display="flex" alignItems="flex-end" mb={2}>
             <SignTypo onClick={handleOpen}>동의인:</SignTypo>
             <TextField
@@ -621,11 +637,11 @@ const SurveyA = () => {
               value={state.relationship}
               onChange={handleTextChange}
               InputProps={{
-                endAdornment: <span onClick={() => setOpen(true)}>(인)</span>,
+                // endAdornment: <span onClick={() => setOpen(true)}>(인)</span>,
                 classes: { input: classes.input },
               }}
             />
-            {trimmedDataURL ? <SignedImage src={trimmedDataURL} /> : null}
+            {/* {trimmedDataURL ? <SignedImage src={trimmedDataURL} /> : null} */}
           </Box>
         </Box>
         <Dialog onClose={() => setOpen(false)} open={open} fullWidth>

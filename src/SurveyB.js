@@ -85,8 +85,11 @@ const SignedImage = styled("img")({
 
 function reducer(state, action) {
   console.log(action);
-  const { type, payload } = action;
+  const { type, payload } = action; // type: check1, payload: true
+  // 폼 값을 payload 로 리셋시킬때
   if (type === "reset") return payload;
+
+  // 새로운 입력값을 넣을때
   return { ...state, [type]: payload };
 }
 
@@ -161,21 +164,29 @@ const SurveyB = () => {
   const padRef = useRef();
   const [open, setOpen] = useState(false);
   const [trimmedDataURL, setTrimmedDataURL] = useState("");
-  const { id } = useParams();
+  const { id } = useParams(); // 17
   const { loading, data } = useQuery(GET_SURVEY, {
     variables: { id },
     skip: !id,
     onCompleted: ({ survey }) => {
-      const { result, ...rest } = survey;
+      const { result, ...rest } = survey; // rest === {
+
+      // "0,1,1,0,0,0,0,0,0,0,0,1,1,0,0"
       const initialState = result
         .split(",")
         .map(Number)
         .reduce(
+          // 1회차 실행 // acc = { }, curr: 0
+          // 2회차 실행 // acc = { check1: false }, curr: 1
+          // 3회차 실행 // acc = { check1: false, check2: true }, curr: 1
           (acc, curr, i) => ({
             ...acc,
+            // check1: false,
+            // check2: true,
             [`check${i + 1}`]: Boolean(curr),
-          }),
-          {}
+            // return { check1: false, check2: true, check3: true  }
+          }), // reducer
+          {} // initial value
         );
 
       dispatch({
@@ -230,14 +241,14 @@ const SurveyB = () => {
       check14,
       check15,
     ]
-      .map((v) => (v ? "1" : "0"))
-      .join(",");
+      .map((v) => (v ? "1" : "0")) // [1,0,1,0,0,0,0,0,1...]
+      .join(","); //"1,0,1,0,0,0,0,0,1"
 
     addSurvey({
       variables: {
         input: {
           type: "B",
-          result,
+          result, //"1,0,1,0,0,0,0,0,1"
           signatureDataUrl: trimmedDataURL,
           ...rest,
         },
@@ -250,14 +261,17 @@ const SurveyB = () => {
   };
   const handleOpen = () => setOpen(true);
 
+  // Checkbox
   const handleChange = (event) => {
     dispatch({ type: event.target.name, payload: event.target.checked });
   };
 
+  // Text 입력
   const handleTextChange = (event) => {
     dispatch({ type: event.target.name, payload: event.target.value });
   };
 
+  // Radio 버튼
   const handleRadioChange = (event) => {
     if (!editMode) return;
     dispatch({ type: "gender", payload: event.target.value });
