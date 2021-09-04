@@ -738,7 +738,14 @@ const SurveyB = () => {
           </DialogActions>
         </Dialog>
         <Box mx="auto" width="fit-content">
-          <img src={Logo} alt="logo" style={{ width: 206, height: 62 }} />
+          <img
+            src={Logo}
+            alt="logo"
+            style={{
+              width: 323,
+              height: 62,
+            }}
+          />
         </Box>
       </Box>
       {editMode && (

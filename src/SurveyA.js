@@ -611,11 +611,18 @@ const SurveyA = () => {
           <Box
             style={{
               position: "absolute",
-              left: 127,
+              left: 80,
               bottom: 26,
             }}
           >
-            <img src={Logo} alt="logo" style={{ width: 206, height: 62 }} />
+            <img
+              src={Logo}
+              alt="logo"
+              style={{
+                width: 323,
+                height: 62,
+              }}
+            />
           </Box>
           <Box position="relative" display="flex" alignItems="flex-end" mb={2}>
             <SignTypo onClick={handleOpen}>동의인:</SignTypo>
